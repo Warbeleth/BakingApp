@@ -1,10 +1,6 @@
 package com.weeturretstudio.warbeleth.android.bakingapp.utilities.endpoints;
 
-import com.google.gson.Gson;
-
-import org.json.JSONObject;
-
-import java.util.List;
+import com.google.gson.JsonArray;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -12,5 +8,5 @@ import retrofit2.http.GET;
 public interface UdacityRecipeEndpoint {
 
     @GET("android-baking-app-json/")
-    Call<List<JSONObject>> getRecipeString();
+    Call<JsonArray> getRecipeString();
 }

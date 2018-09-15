@@ -15,11 +15,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.weeturretstudio.warbeleth.android.bakingapp.dummy.DummyContent;
 import com.weeturretstudio.warbeleth.android.bakingapp.utilities.NetworkUtil;
-
-import org.json.JSONObject;
 
 import java.util.List;
 
@@ -74,9 +72,9 @@ public class RecipeListActivity extends AppCompatActivity {
         setupRecyclerView((RecyclerView) recyclerView);
 
         //TODO: Remove debug code below
-        NetworkUtil.getInstance().getRecipeString(new Callback<List<JSONObject>>() {
+        NetworkUtil.getInstance().getRecipeString(new Callback<JsonArray>() {
             @Override
-            public void onResponse(Call<List<JSONObject>> call, Response<List<JSONObject>> response) {
+            public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
                 if(response.isSuccessful())
                     Log.v("NetworkTest", "Result: " + response.body());
                 else
@@ -84,7 +82,7 @@ public class RecipeListActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<JSONObject>> call, Throwable t) {
+            public void onFailure(Call<JsonArray> call, Throwable t) {
                 Log.v("NetworkTest", "Failure: " + t.toString());
             }
         });

@@ -4,20 +4,13 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.weeturretstudio.warbeleth.android.bakingapp.utilities.endpoints.UdacityRecipeEndpoint;
-
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.GET;
 
 public class NetworkUtil {
     private static final String TAG = NetworkUtil.class.getSimpleName();
@@ -51,9 +44,9 @@ public class NetworkUtil {
         return udacityEndpoint;
     }
 
-    public void getRecipeString(Callback<List<JSONObject>> callback) {
+    public void getRecipeString(Callback<JsonArray> callback) {
         try {
-            Call<List<JSONObject>> getRecipeCall = getUdacityEndpoint().getRecipeString();
+            Call<JsonArray> getRecipeCall = getUdacityEndpoint().getRecipeString();
             getRecipeCall.enqueue(callback);
         } catch (Exception e) {
             e.printStackTrace();

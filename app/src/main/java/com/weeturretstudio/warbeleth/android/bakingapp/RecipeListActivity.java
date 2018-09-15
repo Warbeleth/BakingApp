@@ -9,14 +9,23 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.weeturretstudio.warbeleth.android.bakingapp.dummy.DummyContent;
+import com.weeturretstudio.warbeleth.android.bakingapp.utilities.NetworkUtil;
+
+import org.json.JSONObject;
 
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * An activity representing a list of Recipes. This activity
@@ -63,6 +72,23 @@ public class RecipeListActivity extends AppCompatActivity {
         View recyclerView = findViewById(R.id.recipe_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
+
+        //TODO: Remove debug code below
+        NetworkUtil.getInstance().getRecipeString(new Callback<List<JSONObject>>() {
+            @Override
+            public void onResponse(Call<List<JSONObject>> call, Response<List<JSONObject>> response) {
+                if(response.isSuccessful())
+                    Log.v("NetworkTest", "Result: " + response.body());
+                else
+                    Log.v("NetworkTest", "Response, Unsuccessful");
+            }
+
+            @Override
+            public void onFailure(Call<List<JSONObject>> call, Throwable t) {
+                Log.v("NetworkTest", "Failure: " + t.toString());
+            }
+        });
+        //TODO: Remove debug code above
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {

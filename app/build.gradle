@@ -19,7 +19,7 @@ android {
 }
 
 dependencies {
-    //TODO: Evaluate necessity of: Preference, Room, Extensions (livedata/viewmodel), GSON, Picasso
+    //TODO: Evaluate necessity of: Preference, Room, Extensions (livedata/viewmodel), GSON, Picasso, and now RetroFit
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:support-v4:27.1.1'
@@ -31,6 +31,8 @@ dependencies {
     implementation 'android.arch.lifecycle:extensions:1.1.1' //LiveData & View Model
     implementation 'com.google.code.gson:gson:2.8.2' //Utilized for JSON parsing
     implementation 'com.squareup.picasso:picasso:2.71828' //Utilized for image loading
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0' //Utilized for Network Requests
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0' //Utilized for GSON to Retrofit
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'

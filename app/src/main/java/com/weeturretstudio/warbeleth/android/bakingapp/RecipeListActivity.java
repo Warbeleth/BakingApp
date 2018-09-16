@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.google.gson.JsonArray;
 import com.weeturretstudio.warbeleth.android.bakingapp.dummy.DummyContent;
+import com.weeturretstudio.warbeleth.android.bakingapp.model.Recipe;
 import com.weeturretstudio.warbeleth.android.bakingapp.utilities.NetworkUtil;
 
 import java.util.List;
@@ -40,6 +41,7 @@ public class RecipeListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
+    private List<Recipe> recipes = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +86,21 @@ public class RecipeListActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<JsonArray> call, Throwable t) {
                 Log.v("NetworkTest", "Failure: " + t.toString());
+            }
+        });
+
+        //New Version
+        NetworkUtil.getInstance().getRecipeList(new Callback<List<Recipe>>() {
+            @Override
+            public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
+                recipes = response.body();
+                if(recipes != null)
+                    Log.v("NetworkTest_Two", "Recipes: " + recipes.toString());
+            }
+
+            @Override
+            public void onFailure(Call<List<Recipe>> call, Throwable t) {
+                Log.v("NetworkTest_Two", "Recipes: " + "Failed to Load");
             }
         });
         //TODO: Remove debug code above

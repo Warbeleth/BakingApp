@@ -5,7 +5,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import com.google.gson.JsonArray;
+import com.weeturretstudio.warbeleth.android.bakingapp.model.Recipe;
 import com.weeturretstudio.warbeleth.android.bakingapp.utilities.endpoints.UdacityRecipeEndpoint;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,6 +54,11 @@ public class NetworkUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void getRecipeList(Callback<List<Recipe>> callback) {
+        Call<List<Recipe>> getRecipeListCall = getUdacityEndpoint().getRecipeList();
+        getRecipeListCall.enqueue(callback);
     }
 
     /**

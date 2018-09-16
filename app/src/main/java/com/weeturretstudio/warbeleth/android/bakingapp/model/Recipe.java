@@ -47,8 +47,8 @@ public class Recipe implements Parcelable
     protected Recipe(Parcel in) {
         this.id = ((int) in.readValue((int.class.getClassLoader())));
         this.name = ((String) in.readValue((String.class.getClassLoader())));
-        in.readList(this.ingredients, (com.weeturretstudio.warbeleth.android.bakingapp.model.Ingredient.class.getClassLoader()));
-        in.readList(this.steps, (com.weeturretstudio.warbeleth.android.bakingapp.model.Step.class.getClassLoader()));
+        this.ingredients = in.createTypedArrayList(Ingredient.CREATOR);
+        this.steps = in.createTypedArrayList(Step.CREATOR);
         this.servings = ((int) in.readValue((int.class.getClassLoader())));
         this.image = ((String) in.readValue((String.class.getClassLoader())));
     }
@@ -107,8 +107,8 @@ public class Recipe implements Parcelable
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(id);
         dest.writeValue(name);
-        dest.writeList(ingredients);
-        dest.writeList(steps);
+        dest.writeTypedList(ingredients);
+        dest.writeTypedList(steps);
         dest.writeValue(servings);
         dest.writeValue(image);
     }

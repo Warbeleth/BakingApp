@@ -1,6 +1,7 @@
 package com.weeturretstudio.warbeleth.android.bakingapp;
 
 import android.app.Activity;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.weeturretstudio.warbeleth.android.bakingapp.dummy.DummyContent;
+import com.weeturretstudio.warbeleth.android.bakingapp.model.Recipe;
 
 /**
  * A fragment representing a single Recipe detail screen.
@@ -25,9 +26,9 @@ public class RecipeDetailFragment extends Fragment {
     public static final String ARG_ITEM_ID = "item_id";
 
     /**
-     * The dummy content this fragment is presenting.
+     * The content this fragment is presenting.
      */
-    private DummyContent.DummyItem mItem;
+    private Recipe mItem;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -40,28 +41,29 @@ public class RecipeDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+        if (getArguments() != null && getArguments().containsKey(ARG_ITEM_ID)) {
+            // Load the content specified by the fragment
+            // arguments.
+            mItem = getArguments().getParcelable(ARG_ITEM_ID);
 
             Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-            if (appBarLayout != null) {
-                appBarLayout.setTitle(mItem.content);
+            if(activity != null) {
+                CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+                if (appBarLayout != null) {
+                    appBarLayout.setTitle("Title: " + mItem.getName());
+                }
             }
         }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.recipe_detail, container, false);
 
-        // Show the dummy content as text in a TextView.
+        // Show the content as text in a TextView.
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.recipe_detail)).setText(mItem.details);
+            ((TextView) rootView.findViewById(R.id.recipe_detail)).setText("Servings: " + mItem.getServings());
         }
 
         return rootView;

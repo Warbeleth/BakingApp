@@ -39,13 +39,9 @@ import retrofit2.Response;
  */
 public class RecipeListActivity extends AppCompatActivity {
 
-    /**
-     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
-     * device.
-     */
-    private boolean mTwoPane;
+    public static final String ARG_RECIPE_ITEM = "recipe_item";
     private RecyclerView recyclerView;
-    private SimpleItemRecyclerViewAdapter simpleAdapter;
+    private RecipeCardRecyclerViewAdapter simpleAdapter;
     private Observer observer;
 
     @Override
@@ -57,48 +53,14 @@ public class RecipeListActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-        if (findViewById(R.id.recipe_detail_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
-            mTwoPane = true;
-        }
-
         recyclerView = findViewById(R.id.recipe_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
-
-        //TODO: Remove debug code below
-        NetworkUtil.getInstance().getRecipeString(new Callback<JsonArray>() {
-            @Override
-            public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
-                if(response.isSuccessful())
-                    Log.v("NetworkTest", "Result: " + response.body());
-                else
-                    Log.v("NetworkTest", "Response, Unsuccessful");
-            }
-
-            @Override
-            public void onFailure(Call<JsonArray> call, Throwable t) {
-                Log.v("NetworkTest", "Failure: " + t.toString());
-            }
-        });
-        //TODO: Remove debug code above
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         if(simpleAdapter == null)
-            simpleAdapter = new SimpleItemRecyclerViewAdapter(this, RecipeContent.recipes.getValue(), mTwoPane);
+            simpleAdapter = new RecipeCardRecyclerViewAdapter(this, RecipeContent.recipes.getValue());
 
         if(observer == null) {
             observer = new Observer<ArrayList<Recipe>>() {
@@ -115,12 +77,11 @@ public class RecipeListActivity extends AppCompatActivity {
         recyclerView.setAdapter(simpleAdapter);
     }
 
-    public static class SimpleItemRecyclerViewAdapter
-            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
+    public static class RecipeCardRecyclerViewAdapter
+            extends RecyclerView.Adapter<RecipeCardRecyclerViewAdapter.ViewHolder> {
 
         private final RecipeListActivity mParentActivity;
         private final List<Recipe> mValues;
-        private final boolean mTwoPane;
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -129,33 +90,21 @@ public class RecipeListActivity extends AppCompatActivity {
                 if(item == null)
                     return;
 
-                if (mTwoPane) {
-                    Bundle arguments = new Bundle();
-                    arguments.putParcelable(RecipeDetailFragment.ARG_ITEM_ID, item);
-                    RecipeDetailFragment fragment = new RecipeDetailFragment();
-                    fragment.setArguments(arguments);
-                    mParentActivity.getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.recipe_detail_container, fragment)
-                            .commit();
-                } else {
-                    Context context = view.getContext();
-                    Intent intent = new Intent(context, RecipeDetailActivity.class);
-                    intent.putExtra(RecipeDetailFragment.ARG_ITEM_ID, item);
+                Context context = view.getContext();
+                Intent intent = new Intent(context, RecipeStepListActivity.class);
+                intent.putExtra(ARG_RECIPE_ITEM, item);
 
-                    context.startActivity(intent);
-                }
+                context.startActivity(intent);
             }
         };
 
-        SimpleItemRecyclerViewAdapter(RecipeListActivity parent,
-                                      List<Recipe> items,
-                                      boolean twoPane) {
+        RecipeCardRecyclerViewAdapter(RecipeListActivity parent,
+                                      List<Recipe> items) {
             mValues = new ArrayList<>();
             if(items != null)
                 mValues.addAll(items);
 
             mParentActivity = parent;
-            mTwoPane = twoPane;
         }
 
         public void changeValues(List<Recipe> changedItems) {

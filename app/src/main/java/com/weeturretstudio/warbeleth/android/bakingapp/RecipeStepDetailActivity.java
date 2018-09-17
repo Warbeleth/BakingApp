@@ -10,18 +10,24 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
+import com.weeturretstudio.warbeleth.android.bakingapp.model.Ingredient;
+import com.weeturretstudio.warbeleth.android.bakingapp.model.Step;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * An activity representing a single Recipe detail screen. This
+ * An activity representing a single RecipeStepListActivity detail screen. This
  * activity is only used on narrow width devices. On tablet-size devices,
  * item details are presented side-by-side with a list of items
- * in a {@link RecipeListActivity}.
+ * in a {@link RecipeStepListActivity}.
  */
-public class RecipeDetailActivity extends AppCompatActivity {
+public class RecipeStepDetailActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recipe_detail);
+        setContentView(R.layout.activity_recipesteplistactivity_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
 
@@ -53,12 +59,24 @@ public class RecipeDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putParcelable(RecipeDetailFragment.ARG_ITEM_ID,
-                    getIntent().getParcelableExtra(RecipeDetailFragment.ARG_ITEM_ID));
-            RecipeDetailFragment fragment = new RecipeDetailFragment();
+
+            Intent invokingIntent = getIntent();
+
+            if(invokingIntent.hasExtra(RecipeStepDetailFragment.ARG_INGREDIENT)) {
+                //Handle Ingredients List
+                ArrayList<Ingredient> ingredients = invokingIntent.getParcelableArrayListExtra(RecipeStepDetailFragment.ARG_INGREDIENT);
+                arguments.putParcelableArrayList(RecipeStepDetailFragment.ARG_INGREDIENT, ingredients);
+            }
+            if(invokingIntent.hasExtra(RecipeStepDetailFragment.ARG_STEP)) {
+                //Handle Step item
+                Step step = invokingIntent.getParcelableExtra(RecipeStepDetailFragment.ARG_STEP);
+                arguments.putParcelable(RecipeStepDetailFragment.ARG_STEP, step);
+            }
+
+            RecipeStepDetailFragment fragment = new RecipeStepDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.recipe_detail_container, fragment)
+                    .add(R.id.recipesteplistactivity_detail_container, fragment)
                     .commit();
         }
     }
@@ -73,7 +91,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
             //
             // http://developer.android.com/design/patterns/navigation.html#up-vs-back
             //
-            navigateUpTo(new Intent(this, RecipeListActivity.class));
+            navigateUpTo(new Intent(this, RecipeStepListActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);

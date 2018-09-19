@@ -1,9 +1,11 @@
 package com.weeturretstudio.warbeleth.android.bakingapp;
 
 import android.app.Activity;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,7 @@ import com.weeturretstudio.warbeleth.android.bakingapp.dummy.DummyContent;
 import com.weeturretstudio.warbeleth.android.bakingapp.model.Ingredient;
 import com.weeturretstudio.warbeleth.android.bakingapp.model.Step;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -91,12 +94,67 @@ public class RecipeStepDetailFragment extends Fragment {
         //TODO: Show view content
         // Show the content as text in a TextView.
         if (ingredients != null) {
-            ((TextView) rootView.findViewById(R.id.recipesteplistactivity_detail)).setText("Ingredients: " + ingredients.size());
+            RecyclerView recyclerView = rootView.findViewById(R.id.ingredient_list_recycler_view);
+            assert recyclerView != null;
+            recyclerView.setAdapter(new IngredientViewAdapter(ingredients));
         }
         if(step != null) {
-            ((TextView) rootView.findViewById(R.id.recipesteplistactivity_detail)).setText("Step: " + step.getShortDescription());
+            //((TextView) rootView.findViewById(R.id.recipesteplistactivity_detail)).setText("Step: " + step.getShortDescription());
         }
 
         return rootView;
+    }
+
+    public static class IngredientViewAdapter
+            extends RecyclerView.Adapter<IngredientViewAdapter.ViewHolder> {
+
+        private final List<Ingredient> mValues;
+
+        IngredientViewAdapter(List<Ingredient> items) {
+            mValues = new ArrayList<>();
+            mValues.addAll(items);
+        }
+
+        @Override
+        @NonNull
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.ingredient_list_content, parent, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+            if(mValues != null) {
+                Ingredient obj = mValues.get(position);
+
+                if (obj != null) {
+                    holder.mIngredientName.setText(obj.getIngredient());
+                    holder.mMeasurementSize.setText(obj.getMeasure());
+                    holder.mMeasurementQuantity.setText("" + String.valueOf(obj.getQuantity()));
+                }
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+            if(mValues == null)
+                return 0;
+            else
+                return mValues.size();
+        }
+
+        class ViewHolder extends RecyclerView.ViewHolder {
+            final TextView mIngredientName;
+            final TextView mMeasurementSize;
+            final TextView mMeasurementQuantity;
+
+            ViewHolder(View view) {
+                super(view);
+                mIngredientName = (TextView) view.findViewById(R.id.textview_Ingredient);
+                mMeasurementSize = (TextView) view.findViewById(R.id.textview_MeasurementValue);
+                mMeasurementQuantity = (TextView) view.findViewById(R.id.textview_MeasureSizeValue);
+            }
+        }
     }
 }

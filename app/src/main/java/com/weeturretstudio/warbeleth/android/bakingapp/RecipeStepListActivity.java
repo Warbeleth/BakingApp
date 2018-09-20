@@ -157,12 +157,14 @@ public class RecipeStepListActivity extends AppCompatActivity {
             Object obj = mValues.get(position);
             String objType = RecipeStepDetailFragment.getKeyForInstanceType(obj);
 
-            holder.mIdView.setText("Pos" + position);
-
-            if(objType.equals(RecipeStepDetailFragment.ARG_STEP))
-                holder.mContentView.setText(((Step)mValues.get(position)).getShortDescription());
-            else
+            if(objType.equals(RecipeStepDetailFragment.ARG_STEP)) {
+                holder.mIdView.setText("Step " + (position-1));
+                holder.mContentView.setText(((Step) mValues.get(position)).getShortDescription());
+            }
+            else {
+                holder.mIdView.setText("");
                 holder.mContentView.setText("Ingredients");
+            }
 
             holder.itemView.setTag(mValues.get(position));
             holder.itemView.setOnClickListener(mOnClickListener);

@@ -22,8 +22,13 @@
     </android.support.v7.widget.RecyclerView>
 
     <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical" android:layout_width="match_parent"
+        android:id="@+id/nestedScrollView_Root"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <include layout="@layout/recipe_step_content"/>
+
     </android.support.v4.widget.NestedScrollView>
 
 </LinearLayout>

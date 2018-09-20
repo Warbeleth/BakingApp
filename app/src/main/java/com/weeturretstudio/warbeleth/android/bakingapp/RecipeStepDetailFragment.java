@@ -5,11 +5,13 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.weeturretstudio.warbeleth.android.bakingapp.dummy.DummyContent;
@@ -91,15 +93,41 @@ public class RecipeStepDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.recipesteplistactivity_detail, container, false);
 
+        RecyclerView recyclerView = rootView.findViewById(R.id.ingredient_list_recycler_view);
+        NestedScrollView nestedScrollView = rootView.findViewById(R.id.nestedScrollView_Root);
+
         //TODO: Show view content
         // Show the content as text in a TextView.
         if (ingredients != null) {
-            RecyclerView recyclerView = rootView.findViewById(R.id.ingredient_list_recycler_view);
+            nestedScrollView.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
             assert recyclerView != null;
             recyclerView.setAdapter(new IngredientViewAdapter(ingredients));
         }
         if(step != null) {
             //((TextView) rootView.findViewById(R.id.recipesteplistactivity_detail)).setText("Step: " + step.getShortDescription());
+            nestedScrollView.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+
+            ImageView thumbnail = rootView.findViewById(R.id.imageView_Step_Thumbnail);
+            TextView shortDescription = rootView.findViewById(R.id.textView_ShortDescription);
+            TextView fullDescription = rootView.findViewById(R.id.textView_FullDescription);
+            ImageView exoplayerPlaceholder = rootView.findViewById(R.id.imageView_PlaceHolder);
+
+            if(step.getThumbnailURL() != null) {
+                //TODO: thumbnail...?
+                Log.v("Thumbnail", "TODO");
+            }
+
+            if(step.getShortDescription() != null)
+                shortDescription.setText(step.getShortDescription());
+            if(step.getDescription() != null)
+                fullDescription.setText(step.getDescription());
+
+            if(step.getVideoURL() != null) {
+                //TODO: Exoplayer...?
+                Log.v("Exoplayer", "TODO");
+            }
         }
 
         return rootView;

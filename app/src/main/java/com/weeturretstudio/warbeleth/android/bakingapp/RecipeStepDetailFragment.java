@@ -1,6 +1,7 @@
 package com.weeturretstudio.warbeleth.android.bakingapp;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
@@ -14,7 +15,18 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
 import com.weeturretstudio.warbeleth.android.bakingapp.dummy.DummyContent;
+import com.weeturretstudio.warbeleth.android.bakingapp.exoplayer.ExoPlayerWrapper;
 import com.weeturretstudio.warbeleth.android.bakingapp.model.Ingredient;
 import com.weeturretstudio.warbeleth.android.bakingapp.model.Step;
 
@@ -40,6 +52,9 @@ public class RecipeStepDetailFragment extends Fragment {
      */
     private List<Ingredient> ingredients;
     private Step step;
+
+    ExoPlayerWrapper exoplayerThumbnailWrapper;
+    ExoPlayerWrapper exoplayerVideoWrapper;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -109,28 +124,130 @@ public class RecipeStepDetailFragment extends Fragment {
             nestedScrollView.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
 
-            ImageView thumbnail = rootView.findViewById(R.id.imageView_Step_Thumbnail);
             TextView shortDescription = rootView.findViewById(R.id.textView_ShortDescription);
             TextView fullDescription = rootView.findViewById(R.id.textView_FullDescription);
-            ImageView exoplayerPlaceholder = rootView.findViewById(R.id.imageView_PlaceHolder);
-
-            if(step.getThumbnailURL() != null) {
-                //TODO: thumbnail...?
-                Log.v("Thumbnail", "TODO");
-            }
 
             if(step.getShortDescription() != null)
                 shortDescription.setText(step.getShortDescription());
             if(step.getDescription() != null)
                 fullDescription.setText(step.getDescription());
 
-            if(step.getVideoURL() != null) {
-                //TODO: Exoplayer...?
+            if(step.getThumbnailURL() != null && step.getThumbnailURL().length() > 0) {
+                Log.v("Thumbnail", "TODO");
+                if(exoplayerThumbnailWrapper == null) {
+                    exoplayerThumbnailWrapper = new ExoPlayerWrapper();
+                    exoplayerThumbnailWrapper.view = rootView.findViewById(R.id.exoplayer_Step_Thumbnail);
+                    exoplayerThumbnailWrapper.url = step.getThumbnailURL();
+                }
+            }
+            else {
+                PlayerView exoview = rootView.findViewById(R.id.exoplayer_Step_Thumbnail);
+                exoview.setVisibility(View.GONE);
+            }
+
+            if(step.getVideoURL() != null && step.getVideoURL().length() > 0) {
                 Log.v("Exoplayer", "TODO");
+
+                if(exoplayerVideoWrapper == null) {
+                    exoplayerVideoWrapper = new ExoPlayerWrapper();
+                    exoplayerVideoWrapper.view = rootView.findViewById(R.id.exoplayer_Video);
+                    exoplayerVideoWrapper.url = step.getVideoURL();
+                    InitializePlayer(exoplayerVideoWrapper, step.getVideoURL());
+                }
+            }
+            else {
+                PlayerView exoview = rootView.findViewById(R.id.exoplayer_Video);
+                exoview.setVisibility(View.GONE);
             }
         }
 
         return rootView;
+    }
+
+    /*
+    Reference Code: https://codelabs.developers.google.com/codelabs/exoplayer-intro/#2
+     */
+    private void InitializePlayer(ExoPlayerWrapper wrapper, String url) {
+        if(wrapper != null && url != null && url.length() > 0) {
+
+            if(wrapper.player == null) {
+                wrapper.player = ExoPlayerFactory.newSimpleInstance(
+                        new DefaultRenderersFactory(this.getContext()),
+                        new DefaultTrackSelector(), new DefaultLoadControl());
+
+                wrapper.view.setVisibility(View.VISIBLE);
+                wrapper.view.setPlayer(wrapper.player);
+            }
+
+            wrapper.url = url;
+
+            wrapper.player.setPlayWhenReady(wrapper.playWhenReady);
+            wrapper.player.seekTo(wrapper.currentWindow, wrapper.playbackPosition);
+
+            if(wrapper.mediaSource == null) {
+                wrapper.mediaSource = buildMediaSource(url);
+                wrapper.player.prepare(wrapper.mediaSource, true, false);
+            }
+        }
+    }
+
+    private void InitializePlayer(ExoPlayerWrapper wrapper) {
+        if(wrapper != null && wrapper.url != null && wrapper.url.length() > 0) {
+            InitializePlayer(wrapper, wrapper.url);
+        }
+    }
+
+    private MediaSource buildMediaSource(String url) {
+        Uri uri = Uri.parse(url);
+
+        return new ExtractorMediaSource.Factory(
+                new DefaultHttpDataSourceFactory("exoplayer-bakingapp")).
+                createMediaSource(uri);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (Util.SDK_INT > 23) {
+            InitializePlayer(exoplayerThumbnailWrapper);
+            InitializePlayer(exoplayerVideoWrapper);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (Util.SDK_INT <= 23) {
+            InitializePlayer(exoplayerThumbnailWrapper);
+            InitializePlayer(exoplayerVideoWrapper);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (Util.SDK_INT <= 23) {
+            releasePlayer();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (Util.SDK_INT > 23) {
+            releasePlayer();
+        }
+    }
+
+    private void releasePlayer() {
+        if(exoplayerThumbnailWrapper != null) {
+            exoplayerThumbnailWrapper.releasePlayer();
+        }
+
+        if(exoplayerVideoWrapper != null) {
+            exoplayerVideoWrapper.releasePlayer();
+        }
     }
 
     public static class IngredientViewAdapter

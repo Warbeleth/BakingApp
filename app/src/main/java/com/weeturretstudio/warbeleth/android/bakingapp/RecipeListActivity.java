@@ -15,9 +15,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.JsonArray;
+import com.squareup.picasso.Picasso;
 import com.weeturretstudio.warbeleth.android.bakingapp.model.Recipe;
 import com.weeturretstudio.warbeleth.android.bakingapp.model.RecipeContent;
 import com.weeturretstudio.warbeleth.android.bakingapp.utilities.NetworkUtil;
@@ -129,6 +132,17 @@ public class RecipeListActivity extends AppCompatActivity {
                 if(mValues.get(position) != null) {
                     holder.mIdView.setText("ID: " + mValues.get(position).getId());
                     holder.mContentView.setText("Name: " + mValues.get(position).getName());
+
+                    if(mValues.get(position).getImage() != null && mValues.get(position).getImage().length() > 0)
+                    {
+                        holder.mBackground.setVisibility(View.VISIBLE);
+                        Picasso.get().load(mValues.get(position).getImage())
+                                .fit()
+                                .centerInside()
+                                .into(holder.mBackground);
+                    }
+                    else
+                        holder.mBackground.setVisibility(View.GONE);
                 }
 
                 holder.itemView.setTag(mValues.get(position));
@@ -147,11 +161,13 @@ public class RecipeListActivity extends AppCompatActivity {
         class ViewHolder extends RecyclerView.ViewHolder {
             final TextView mIdView;
             final TextView mContentView;
+            final ImageView mBackground;
 
             ViewHolder(View view) {
                 super(view);
                 mIdView = (TextView) view.findViewById(R.id.id_text);
                 mContentView = (TextView) view.findViewById(R.id.content);
+                mBackground = (ImageView) view.findViewById(R.id.recipe_item_background);
             }
         }
     }

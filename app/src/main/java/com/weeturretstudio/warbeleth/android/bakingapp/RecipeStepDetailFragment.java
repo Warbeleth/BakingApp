@@ -1,6 +1,8 @@
 package com.weeturretstudio.warbeleth.android.bakingapp;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -12,20 +14,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
-import com.weeturretstudio.warbeleth.android.bakingapp.dummy.DummyContent;
 import com.weeturretstudio.warbeleth.android.bakingapp.exoplayer.ExoPlayerWrapper;
 import com.weeturretstudio.warbeleth.android.bakingapp.model.Ingredient;
 import com.weeturretstudio.warbeleth.android.bakingapp.model.Step;
@@ -46,6 +45,8 @@ public class RecipeStepDetailFragment extends Fragment {
      */
     public static final String ARG_STEP = "arg_step";
     public static final String ARG_INGREDIENT = "arg_ingredient";
+    private static final String ARG_THUMBNAIL = "arg_thumbnail";
+    private static final String ARG_VIDEO = "arg_video";
 
     /**
      * The content this fragment is presenting.
@@ -89,6 +90,16 @@ public class RecipeStepDetailFragment extends Fragment {
         }
         else if(getArguments().containsKey(ARG_STEP)) {
             step = getArguments().getParcelable(ARG_STEP);
+        }
+
+        if(savedInstanceState != null) {
+            if (savedInstanceState.containsKey(ARG_THUMBNAIL)) {
+                exoplayerThumbnailWrapper = savedInstanceState.getParcelable(ARG_THUMBNAIL);
+            }
+
+            if (savedInstanceState.containsKey(ARG_VIDEO)) {
+                exoplayerVideoWrapper = savedInstanceState.getParcelable(ARG_VIDEO);
+            }
         }
 
         if(ingredients != null || step != null) {
@@ -136,9 +147,10 @@ public class RecipeStepDetailFragment extends Fragment {
                 Log.v("Thumbnail", "TODO");
                 if(exoplayerThumbnailWrapper == null) {
                     exoplayerThumbnailWrapper = new ExoPlayerWrapper();
-                    exoplayerThumbnailWrapper.view = rootView.findViewById(R.id.exoplayer_Step_Thumbnail);
                     exoplayerThumbnailWrapper.url = step.getThumbnailURL();
                 }
+
+                exoplayerThumbnailWrapper.view = rootView.findViewById(R.id.exoplayer_Step_Thumbnail);
             }
             else {
                 PlayerView exoview = rootView.findViewById(R.id.exoplayer_Step_Thumbnail);
@@ -150,10 +162,10 @@ public class RecipeStepDetailFragment extends Fragment {
 
                 if(exoplayerVideoWrapper == null) {
                     exoplayerVideoWrapper = new ExoPlayerWrapper();
-                    exoplayerVideoWrapper.view = rootView.findViewById(R.id.exoplayer_Video);
                     exoplayerVideoWrapper.url = step.getVideoURL();
-                    InitializePlayer(exoplayerVideoWrapper, step.getVideoURL());
                 }
+
+                exoplayerVideoWrapper.view = rootView.findViewById(R.id.exoplayer_Video);
             }
             else {
                 PlayerView exoview = rootView.findViewById(R.id.exoplayer_Video);
@@ -164,9 +176,17 @@ public class RecipeStepDetailFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Log.v("onAttach", "Orientation: " + context.getResources().getConfiguration().orientation +
+                "\nHeight-DP: " + context.getResources().getConfiguration().screenHeightDp +
+                "\nWidth-DP: " + context.getResources().getConfiguration().screenWidthDp);
+    }
+
     /*
-    Reference Code: https://codelabs.developers.google.com/codelabs/exoplayer-intro/#2
-     */
+        Reference Code: https://codelabs.developers.google.com/codelabs/exoplayer-intro/#2
+         */
     private void InitializePlayer(ExoPlayerWrapper wrapper, String url) {
         if(wrapper != null && url != null && url.length() > 0) {
 
@@ -186,7 +206,7 @@ public class RecipeStepDetailFragment extends Fragment {
 
             if(wrapper.mediaSource == null) {
                 wrapper.mediaSource = buildMediaSource(url);
-                wrapper.player.prepare(wrapper.mediaSource, true, false);
+                wrapper.player.prepare(wrapper.mediaSource, false, false);
             }
         }
     }
@@ -247,6 +267,21 @@ public class RecipeStepDetailFragment extends Fragment {
 
         if(exoplayerVideoWrapper != null) {
             exoplayerVideoWrapper.releasePlayer();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if(exoplayerThumbnailWrapper != null) {
+            exoplayerThumbnailWrapper.saveState();
+            outState.putParcelable(ARG_THUMBNAIL, exoplayerThumbnailWrapper);
+        }
+
+        if(exoplayerVideoWrapper != null) {
+            exoplayerVideoWrapper.saveState();
+            outState.putParcelable(ARG_VIDEO, exoplayerVideoWrapper);
         }
     }
 

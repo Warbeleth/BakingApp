@@ -2,4 +2,15 @@
     <string name="app_name">BakingApp</string>
     <string name="title_recipesteplistactivity_list">Steps</string>
     <string name="title_recipesteplistactivity_detail">RecipeStepListActivity Detail</string>
+    <string name="ingredientPlaceholder">Ingredient</string>
+    <string name="measurementLabel">Measurement:</string>
+    <string name="measurementPlaceholder">size</string>
+    <string name="quantityLabel">Quantity:</string>
+    <string name="quantityPlaceholder">qty</string>
+    <string name="widgetPlaceholder">Select a Recipe From The Baking App To Show Here</string>
+    <string name="stepPositionQuantity">Step %1$d</string>
+    <string name="ingredientHeader">Ingredients</string>
+    <string name="emptyString">%1$s</string>
+    <string name="recipeID">ID: %1$d</string>
+    <string name="recipeName">Name: %1$s</string>
 </resources>

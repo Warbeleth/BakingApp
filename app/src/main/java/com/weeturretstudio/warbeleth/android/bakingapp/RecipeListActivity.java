@@ -1,6 +1,8 @@
 package com.weeturretstudio.warbeleth.android.bakingapp;
 
+import android.appwidget.AppWidgetManager;
 import android.arch.lifecycle.Observer;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,15 +11,19 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.weeturretstudio.warbeleth.android.bakingapp.model.Ingredient;
 import com.weeturretstudio.warbeleth.android.bakingapp.model.Recipe;
 import com.weeturretstudio.warbeleth.android.bakingapp.model.RecipeContent;
+import com.weeturretstudio.warbeleth.android.bakingapp.utilities.RecipeWidgetProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,6 +93,21 @@ public class RecipeListActivity extends AppCompatActivity {
                 Intent intent = new Intent(context, RecipeStepListActivity.class);
                 intent.putExtra(ARG_RECIPE_ITEM, item);
 
+                //Setup Widget with Ingredients:
+                StringBuilder ingredientsList = new StringBuilder();
+
+                for(Ingredient ingredient : item.getIngredients()) {
+                    ingredientsList.append(ingredient.getIngredient() + "\n");
+                }
+
+                Log.v("RecipeStepDetailActivity", ingredientsList.toString());
+                AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(view.getContext());
+                RemoteViews views = new RemoteViews(view.getContext().getPackageName(), R.layout.widget_layout);
+                views.setTextViewText(R.id.widget_text_view_title, item.getName());
+                views.setTextViewText(R.id.widget_text_view_body, ingredientsList.toString());
+                ComponentName thisWidget = new ComponentName(view.getContext(), RecipeWidgetProvider.class);
+                appWidgetManager.updateAppWidget(thisWidget, views);
+
                 context.startActivity(intent);
             }
         };
@@ -120,8 +141,8 @@ public class RecipeListActivity extends AppCompatActivity {
             if(mValues != null) {
 
                 if(mValues.get(position) != null) {
-                    holder.mIdView.setText("ID: " + mValues.get(position).getId());
-                    holder.mContentView.setText("Name: " + mValues.get(position).getName());
+                    holder.mIdView.setText(mParentActivity.getString(R.string.recipeID, mValues.get(position).getId()));
+                    holder.mContentView.setText(mParentActivity.getString(R.string.recipeName, mValues.get(position).getName()));
 
                     if(mValues.get(position).getImage() != null && mValues.get(position).getImage().length() > 0)
                     {

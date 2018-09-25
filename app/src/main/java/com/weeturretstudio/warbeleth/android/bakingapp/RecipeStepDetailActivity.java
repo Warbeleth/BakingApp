@@ -1,5 +1,7 @@
 package com.weeturretstudio.warbeleth.android.bakingapp;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -10,9 +12,11 @@ import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
+import android.widget.RemoteViews;
 
 import com.weeturretstudio.warbeleth.android.bakingapp.model.Ingredient;
 import com.weeturretstudio.warbeleth.android.bakingapp.model.Step;
+import com.weeturretstudio.warbeleth.android.bakingapp.utilities.RecipeWidgetProvider;
 
 import java.util.ArrayList;
 import java.util.List;

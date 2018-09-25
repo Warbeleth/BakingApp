@@ -72,9 +72,6 @@ public class NetworkUtil {
             return false;
 
         NetworkInfo info = cm.getActiveNetworkInfo();
-        if(info == null || !info.isConnectedOrConnecting())
-            return false;
-
-        return true;
+        return info != null && info.isConnectedOrConnecting();
     }
 }

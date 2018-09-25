@@ -311,7 +311,7 @@ public class RecipeStepDetailFragment extends Fragment {
                 if (obj != null) {
                     holder.mIngredientName.setText(obj.getIngredient());
                     holder.mMeasurementSize.setText(obj.getMeasure());
-                    holder.mMeasurementQuantity.setText("" + String.valueOf(obj.getQuantity()));
+                    holder.mMeasurementQuantity.setText(holder.itemView.getContext().getString(R.string.emptyString, String.valueOf(obj.getQuantity())));
                 }
             }
         }

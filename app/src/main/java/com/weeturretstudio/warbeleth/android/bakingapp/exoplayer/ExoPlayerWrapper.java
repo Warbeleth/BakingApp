@@ -13,7 +13,7 @@ public class ExoPlayerWrapper implements Parcelable{
     public SimpleExoPlayer player;
     public MediaSource mediaSource;
     public String url;
-    public boolean playWhenReady = false;
+    public boolean playWhenReady = true;
     public int currentWindow = 0;
     public long playbackPosition = 0;
 
@@ -40,7 +40,7 @@ public class ExoPlayerWrapper implements Parcelable{
 
     public void saveState() {
         if(player != null) {
-            playWhenReady = false;
+            playWhenReady = player.getPlayWhenReady();
             currentWindow = player.getCurrentWindowIndex();
             playbackPosition = player.getCurrentPosition();
         }
